@@ -1,3 +1,6 @@
+#define CONFIG
+#define FLIGHT true
+
 #define UI_PORT Serial
 #define UI_BAUD 115200
 
