@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <capsule.h>  
 #include <Adafruit_NeoPixel.h>
-#include "../ERT_RF_Protocol_Interface/PacketDefinition.h"
 #include <rotator.h>
 #include <TinyGPSPlus.h>
 #include <gps.h>
 
+#include "ERT_RF_Protocol_Interface/Protocol.h"
 #include "config.h"
 
 void handleRF_UPLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
@@ -233,6 +233,7 @@ void sendRotatorCmd(PacketTrackerCmd packetToSend) {
 void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	switch (packetId) {
 		case CAPSULE_ID::AV_TELEMETRY:
+		{
 			// UI_PORT.println("Packet with ID 00 from RF_AV_DOWN received : ");
 			uint32_t ledColor = colors[random(sizeof(colors)/sizeof(uint32_t))];
 			ledB.fill(ledColor);
@@ -256,8 +257,11 @@ void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 			uint8_t* packetToSend = Ui.encode(packetId,dataIn,len);
 			UI_PORT.write(packetToSend,Ui.getCodedLen(len));
 			delete[] packetToSend;
+			break;
+		}
 		default:
-		return;
+			break;
+
 	}
 	uint32_t ledColor = colors[random(0,7)];
 	ledA.fill(ledColor);
@@ -268,12 +272,15 @@ void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 void handleRF_GSE_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {	
 	switch (packetId) {
 		case CAPSULE_ID::GSE_TELEMETRY:
+		{
 			uint8_t* packetToSend = Ui.encode(packetId,dataIn,len);
 			// TODO
 			UI_PORT.write(packetToSend,Ui.getCodedLen(len));
 			delete[] packetToSend;
+			break;
+		}
 		default:
-		return;
+			break;
 	}
 	uint32_t ledColor = colors[random(0,7)];
 	ledA.fill(ledColor);
@@ -294,35 +301,35 @@ void handleUi(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 void handleBinoculars(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	switch(packetId) {
 		case CAPSULE_ID::BINOC_GLOBAL_STATUS:
-		{
-			memcpy(&binocGlobalStatus, dataIn, packetBinocGlobalStatusSize);
+			{
+				memcpy(&binocGlobalStatus, dataIn, packetBinocGlobalStatusSize);
 
-			// UI_PORT.print("Azimuth: ");
-			// UI_PORT.print(binocGlobalStatus.attitude.azm);
-			// UI_PORT.print(" Elevation: ");
-			// UI_PORT.print(binocGlobalStatus.attitude.elv);
-			// UI_PORT.print(" sensorIsCalibrated: ");
-			// UI_PORT.println(binocGlobalStatus.status.isCalibrated);
+				// UI_PORT.print("Azimuth: ");
+				// UI_PORT.print(binocGlobalStatus.attitude.azm);
+				// UI_PORT.print(" Elevation: ");
+				// UI_PORT.print(binocGlobalStatus.attitude.elv);
+				// UI_PORT.print(" sensorIsCalibrated: ");
+				// UI_PORT.println(binocGlobalStatus.status.isCalibrated);
 
-			pointer lastBinocPointer;
-			lastBinocPointer.azm = binocGlobalStatus.attitude.azm;
-			lastBinocPointer.elv = binocGlobalStatus.attitude.elv;
-			lastBinocPointer.isInView = binocGlobalStatus.status.isInView;
-			lastBinocPointer.isCalibrated = binocGlobalStatus.status.isCalibrated;
+				pointer lastBinocPointer;
+				lastBinocPointer.azm = binocGlobalStatus.attitude.azm;
+				lastBinocPointer.elv = binocGlobalStatus.attitude.elv;
+				lastBinocPointer.isInView = binocGlobalStatus.status.isInView;
+				lastBinocPointer.isCalibrated = binocGlobalStatus.status.isCalibrated;
 
-			rotator.updatePointer(lastBinocPointer);
-		}
-		break;
+				rotator.updatePointer(lastBinocPointer);
+			}
+			break;
 
-		case CAPSULE_ID::CALIBRATE_TELEMETRY:
-		{
-			yawBinocOffset = cmdToSend.azm-binocGlobalStatus.attitude.azm;
-			pitchBinocOffset = cmdToSend.elv-binocGlobalStatus.attitude.elv;
-		}
-		break;
+			case CAPSULE_ID::CALIBRATE_TELEMETRY:
+			{
+				yawBinocOffset = cmdToSend.azm-binocGlobalStatus.attitude.azm;
+				pitchBinocOffset = cmdToSend.elv-binocGlobalStatus.attitude.elv;
+			}
+			break;
 
 		default:
-		break;
+			break;
 	}
 }
 
