@@ -186,7 +186,7 @@ void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 		#ifdef RF_PROTOCOL_FIREHORN
 		case CAPSULE_ID::AV_TELEMETRY:
 		#else
-		case CAPSULE_ID::HOPPER_DOWNLINK:
+		case CAPSULE_ID::HOPPER_TELEMETRY:
 		#endif 
 		{
 			// UI_PORT.println("Packet with ID 00 from RF_AV_DOWN received : ");
