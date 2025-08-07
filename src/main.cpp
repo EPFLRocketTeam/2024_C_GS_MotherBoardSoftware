@@ -15,7 +15,7 @@ void handleUi(uint8_t packetId, uint8_t *dataIn, uint32_t len);
 void handleAntennaRotator(uint8_t packetId, uint8_t *dataIn, uint32_t len);
 void handleCameraRotator(uint8_t packetId, uint8_t *dataIn, uint32_t len);
 // void handleBinoculars(uint8_t packetId, uint8_t *dataIn, uint32_t len);
-// void handleCommandInput(uint8_t packetId, uint8_t *dataIn, uint32_t len);
+void handleCommandInput(uint8_t packetId, uint8_t *dataIn, uint32_t len);
 // void sendRotatorCmd(PacketTrackerCmd cmd);
 
 Adafruit_NeoPixel ledA(1, NEOPIXEL_A_PIN, NEO_GRB + NEO_KHZ800); // 1 led
@@ -38,7 +38,7 @@ CapsuleStatic Ui(handleUi);
 CapsuleStatic AntennaRotator(handleAntennaRotator);
 CapsuleStatic CameraRotator(handleCameraRotator);
 // CapsuleStatic Binoculars(handleBinoculars);
-// CapsuleStatic CommandInput(handleCommandInput);
+CapsuleStatic CommandInput(handleCommandInput);
 
 static rotClass rotator;
 
@@ -66,11 +66,12 @@ void setup() {
 	RF_GSE_DOWNLINK_PORT.begin(RF_GSE_DOWNLINK_BAUD);
 
 	UI_PORT.begin(115200);
+	UI_PORT.println("We start here");
 	ANTENNA_ROTATOR_PORT.begin(ANTENNA_ROTATOR_BAUD);
 	CAMERA_ROTATOR_PORT.begin(CAMERA_ROTATOR_BAUD);
 	BINOCULARS_PORT.begin(BINOCULARS_BAUD);
 	COMMAND_INPUT_PORT.begin(COMMAND_INPUT_BAUD);
-
+	
 	ledA.begin();
 	ledA.fill(0x00FF00);
 	ledA.show();
@@ -96,7 +97,8 @@ void setup() {
 }
 
 void loop() {
-
+	UI_PORT.println("We start here");
+	delay(200);
 	while (GPS_PORT.available()) {
 		gps.encode(GPS_PORT.read());
 	}
@@ -146,9 +148,9 @@ void loop() {
 	// 	Binoculars.decode(BINOCULARS_PORT.read());
 	// }
 
-	// while (COMMAND_INPUT_PORT.available()) {
-	// 	CommandInput.decode(COMMAND_INPUT_PORT.read());
-	// }
+	while (COMMAND_INPUT_PORT.available()) {
+		CommandInput.decode(COMMAND_INPUT_PORT.read());
+	}
 
 	while (UI_PORT.available()) {
 		Ui.decode(UI_PORT.read());
@@ -242,6 +244,24 @@ void handleUi(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	ledB.show();
 }
 
+
+void handleCommandInput(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
+	switch (packetId)
+	{
+	case CAPSULE_ID::ABORT_BOARD:
+	{
+		uint8_t* packetToSend = Ui.encode(packetId,dataIn,len);
+		UI_PORT.write(packetToSend,Ui.getCodedLen(len));
+		delete[] packetToSend;
+		break;
+	}
+	default:
+		break;
+	}
+	uint32_t ledColor = colors[random(0,7)];
+	ledA.fill(ledColor);
+	ledA.show();
+}
 
 
 // These little guys don't have anything to handle since none are routing through the motherboard 
