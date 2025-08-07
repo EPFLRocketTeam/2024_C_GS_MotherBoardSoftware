@@ -58,7 +58,6 @@ uint32_t colors[] = {
 
 void setup() {
 	pinMode(LED_BUILTIN,OUTPUT);
-	digitalWrite(LED_BUILTIN, HIGH);
 	// put your setup code here, to run once:
 
 	// Initialize all motherboard ports
