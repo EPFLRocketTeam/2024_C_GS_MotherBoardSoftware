@@ -66,7 +66,6 @@ void setup() {
 	RF_GSE_DOWNLINK_PORT.begin(RF_GSE_DOWNLINK_BAUD);
 
 	UI_PORT.begin(115200);
-	UI_PORT.println("We start here");
 	ANTENNA_ROTATOR_PORT.begin(ANTENNA_ROTATOR_BAUD);
 	CAMERA_ROTATOR_PORT.begin(CAMERA_ROTATOR_BAUD);
 	BINOCULARS_PORT.begin(BINOCULARS_BAUD);
@@ -97,8 +96,7 @@ void setup() {
 }
 
 void loop() {
-	UI_PORT.println("We start here");
-	delay(200);
+
 	while (GPS_PORT.available()) {
 		gps.encode(GPS_PORT.read());
 	}
