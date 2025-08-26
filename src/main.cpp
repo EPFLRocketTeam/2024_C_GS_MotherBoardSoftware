@@ -121,7 +121,12 @@ void handleRF_GSE_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 // Commands from the UI are routed through to the uplink
 void handleUi(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	uint8_t* packetToSend = RF_UPLINK.encode(packetId,dataIn,len);
-	RF_UPLINK_PORT.write(packetToSend,RF_UPLINK.getCodedLen(len));
+	if (packetId == GSC_INTERNAL) {
+		RF_AV_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+		RF_GSE_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+	}
+
+	RF_UPLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
 	delete[] packetToSend;
 	
 	uint32_t ledColor = colors[random(0,7)];
