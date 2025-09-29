@@ -120,20 +120,27 @@ void handleRF_GSE_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 
 // Commands from the UI are routed through to the uplink
 void handleUi(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
-	uint8_t* packetToSend = RF_UPLINK.encode(packetId,dataIn,len);
-	if (packetId == GSC_INTERNAL) {
-		RF_AV_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
-		RF_GSE_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
-	}
+    uint8_t* packetToSend = RF_UPLINK.encode(packetId, dataIn, len);
+    
+    // Handle GSC_INTERNAL packets (existing logic)
+    if (packetId == GSC_INTERNAL) {
+        RF_AV_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+        RF_GSE_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+    }
+    
+    // NEW: Route GSE_TELEMETRY packets to GSE downlink port
+    if (packetId == GSE_TELEMETRY) {
+        RF_GSE_DOWNLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+    }
 
-	RF_UPLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
-	delete[] packetToSend;
-	
-	uint32_t ledColor = colors[random(0,7)];
-	ledB.fill(ledColor);
-	ledB.show();
+    // Always send to uplink (original behavior)
+    RF_UPLINK_PORT.write(packetToSend, RF_UPLINK.getCodedLen(len));
+    delete[] packetToSend;
+    
+    uint32_t ledColor = colors[random(0,7)];
+    ledB.fill(ledColor);
+    ledB.show();
 }
-
 
 void handleCommandInput(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	uint8_t* packetToSend;
