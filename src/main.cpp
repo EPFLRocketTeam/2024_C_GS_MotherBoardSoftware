@@ -35,16 +35,23 @@ uint32_t colors[] = {
 	0xFF0800  // Orange
 }; 
 
-
+uint32_t toggleTime;
 void setup() {
 	pinMode(LED_BUILTIN, OUTPUT);
 
+
+#if ETHERNET
+	pinMode(RF_UPLINK_RWE_PIN, OUTPUT);
+	digitalWrite(RF_UPLINK_RWE_PIN, 1);
+#endif 
+
+	toggleTime = millis();
 	// Initialize all motherboard ports
 	RF_UPLINK_PORT.begin(RF_UPLINK_BAUD);
 	RF_AV_DOWNLINK_PORT.begin(RF_AV_DOWNLINK_BAUD);
 	RF_GSE_DOWNLINK_PORT.begin(RF_GSE_DOWNLINK_BAUD);
 
-	UI_PORT.begin(115200);
+	UI_PORT.begin(UI_BAUD);
 	COMMAND_INPUT_PORT.begin(COMMAND_INPUT_BAUD);
 	
 	ledA.begin();
@@ -57,6 +64,11 @@ void setup() {
 }
 
 void loop() {
+	if ((millis()-toggleTime) > LED_BLINK_PERIOD_MS) {
+		digitalToggle(LED_BUILTIN);
+		toggleTime = millis();
+	}
+
 	// Data for each port is decoded and processed
 
 	while (RF_UPLINK_PORT.available()) {

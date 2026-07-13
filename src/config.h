@@ -1,18 +1,25 @@
 #define CONFIG
+
 #define FLIGHT true
+#define ETHERNET false
 
 #define UI_PORT Serial
 #define UI_BAUD 115200
 
+#define RF_UPLINK_RWE_PIN  2
 #define RF_UPLINK_PORT Serial1
 #define RF_UPLINK_BAUD 115200
 
+#define RF_AV_DOWNLINK_RWE_PIN  4
 #define RF_AV_DOWNLINK_PORT Serial2
 #define RF_AV_DOWNLINK_BAUD 115200
 
-#define RF_GSE_DOWNLINK_PORT Serial3
+#define RF_GSE_DOWNLINK_RWE_PIN  9
+#define RF_GSE_DOWNLINK_PORT Serial6
 #define RF_GSE_DOWNLINK_BAUD 115200
 
+
+#define COMMAND_INPUT_RWE_PIN  NULL
 #define COMMAND_INPUT_PORT Serial4
 #define COMMAND_INPUT_BAUD 115200
 
@@ -23,3 +30,5 @@
 #define NOMINAL_BINOC_RATE 100
 
 #define POSITION_ESTIMATION_RATE 10
+
+#define LED_BLINK_PERIOD_MS 1000 
