@@ -5,6 +5,8 @@
 #include "ERT_RF_Protocol_Interface/Protocol.h"
 #include "config.h"
 
+void initRWPins();
+
 void handleRF_UPLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 void handleRF_GSE_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
@@ -41,8 +43,7 @@ void setup() {
 
 
 #if ETHERNET
-	pinMode(RF_UPLINK_RWE_PIN, OUTPUT);
-	digitalWrite(RF_UPLINK_RWE_PIN, 1);
+	initRWPins();
 #endif 
 
 	toggleTime = millis();
@@ -93,6 +94,16 @@ void loop() {
 
 }
 
+void initRWPins() {
+	pinMode(RF_UPLINK_RWE_PIN, OUTPUT);
+	digitalWrite(RF_UPLINK_RWE_PIN, 1);
+
+	pinMode(RF_AV_DOWNLINK_RWE_PIN, OUTPUT);
+	digitalWrite(RF_AV_DOWNLINK_RWE_PIN, 0);
+
+	pinMode(RF_GSE_DOWNLINK_RWE_PIN, OUTPUT);
+	digitalWrite(RF_GSE_DOWNLINK_RWE_PIN, 0);
+}
 
 void handleRF_AV_DOWNLINK(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 	uint8_t* packetToSend;
