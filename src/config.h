@@ -7,9 +7,9 @@
 #define UI_BAUD 115200
 
 
-// PORT 3
+// PORT 8 aka uart 8
 #define RF_UPLINK_RWE_PIN  9
-#define RF_UPLINK_PORT Serial6
+#define RF_UPLINK_PORT Serial5
 #define RF_UPLINK_BAUD 115200
 
 // PORT 2
